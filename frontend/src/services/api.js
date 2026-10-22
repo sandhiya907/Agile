@@ -4,7 +4,7 @@
  * and X-Requested-With for CSRF protection.
  */
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://spendwise-api-7sj4.onrender.com/api';
 
 async function request(endpoint, options = {}) {
   const url = `${BASE_URL}${endpoint}`;
