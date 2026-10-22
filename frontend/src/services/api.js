@@ -1,7 +1,7 @@
 /**
  * SpendWise API Service Layer
- * Uses Fetch API with credentials: 'include' for HttpOnly cookie session management
- * and X-Requested-With for CSRF protection.
+ * Uses Fetch API with Bearer token from localStorage for authentication.
+ * X-Requested-With header is included for CSRF protection.
  */
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://spendwise-api-7sj4.onrender.com/api';
@@ -20,7 +20,7 @@ async function request(endpoint, options = {}) {
   const config = {
     ...options,
     headers,
-    credentials: 'include', // Sends HttpOnly cookie
+    // No credentials: 'include' — using Bearer token auth (compatible with CORS wildcard origin)
   };
 
   try {
