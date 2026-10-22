@@ -46,15 +46,14 @@ def create_app(config_class=Config):
     migrate.init_app(app, db)
     
     # Configure CORS for frontend access with credentials
-    raw_frontend = app.config.get("FRONTEND_URL", "http://localhost:5173")
-    origins = [u.strip().rstrip("/") for u in str(raw_frontend).split(",") if u.strip()]
-    for fallback_origin in ["http://localhost:5173", "http://127.0.0.1:5173"]:
-        if fallback_origin not in origins:
-            origins.append(fallback_origin)
-
+    import re
     cors.init_app(
         app,
-        origins=origins,
+        origins=[
+            r"^https:\/\/.*\.vercel\.app$",
+            r"^http:\/\/localhost:\d+$",
+            r"^http:\/\/127\.0\.0\.1:\d+$"
+        ],
         supports_credentials=True,
         allow_headers=["Content-Type", "Authorization", "X-Requested-With", "X-CSRF-Token"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
