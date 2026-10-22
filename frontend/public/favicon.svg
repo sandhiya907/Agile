@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="walletGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34A828" />
+      <stop offset="100%" stop-color="#23751B" />
+    </linearGradient>
+  </defs>
+  <rect width="48" height="48" rx="12" fill="#E8F5E6"/>
+  <!-- Wallet Body -->
+  <path d="M10 16C10 13.7909 11.7909 12 14 12H34C36.2091 12 38 13.7909 38 16V18H10V16Z" fill="#23751B" opacity="0.6"/>
+  <rect x="8" y="16" width="32" height="22" rx="5" fill="url(#walletGrad)"/>
+  <!-- Wallet Flap & Clasp -->
+  <path d="M26 22H38V32H26C23.7909 32 22 30.2091 22 28V26C22 23.7909 23.7909 22 26 22Z" fill="#1C5C15"/>
+  <!-- Rupee Symbol on clasp / wallet -->
+  <circle cx="31" cy="27" r="3" fill="#FFFFFF"/>
+  <text x="18" y="31" font-family="Arial, sans-serif" font-size="13" font-weight="bold" fill="#FFFFFF">₹</text>
+</svg>
