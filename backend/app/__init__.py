@@ -45,16 +45,11 @@ def create_app(config_class=Config):
     db.init_app(app)
     migrate.init_app(app, db)
     
-    # Configure CORS for frontend access with credentials
-    import re
+    # Configure CORS — allow all origins (public API, token auth used for security)
     cors.init_app(
         app,
-        origins=[
-            r"^https:\/\/.*\.vercel\.app$",
-            r"^http:\/\/localhost:\d+$",
-            r"^http:\/\/127\.0\.0\.1:\d+$"
-        ],
-        supports_credentials=True,
+        origins="*",
+        supports_credentials=False,
         allow_headers=["Content-Type", "Authorization", "X-Requested-With", "X-CSRF-Token"],
         methods=["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"]
     )
@@ -85,23 +80,44 @@ def create_app(config_class=Config):
             "database": db_type
         }), 200
 
-    # Global JSON Error Handlers
+    # Global JSON Error Handlers with explicit CORS headers
+    def _cors_headers():
+        from flask import request as _req
+        origin = _req.headers.get("Origin", "*")
+        return {
+            "Access-Control-Allow-Origin": origin,
+            "Access-Control-Allow-Headers": "Content-Type, Authorization, X-Requested-With, X-CSRF-Token",
+            "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS, PATCH",
+        }
+
     @app.errorhandler(400)
     def bad_request(error):
-        return jsonify({"success": False, "error": "Bad request.", "details": str(error)}), 400
+        resp = jsonify({"success": False, "error": "Bad request.", "details": str(error)})
+        resp.status_code = 400
+        for k, v in _cors_headers().items(): resp.headers[k] = v
+        return resp
 
     @app.errorhandler(404)
     def not_found(error):
-        return jsonify({"success": False, "error": "Resource not found."}), 404
+        resp = jsonify({"success": False, "error": "Resource not found."})
+        resp.status_code = 404
+        for k, v in _cors_headers().items(): resp.headers[k] = v
+        return resp
 
     @app.errorhandler(405)
     def method_not_allowed(error):
-        return jsonify({"success": False, "error": "Method not allowed."}), 405
+        resp = jsonify({"success": False, "error": "Method not allowed."})
+        resp.status_code = 405
+        for k, v in _cors_headers().items(): resp.headers[k] = v
+        return resp
 
     @app.errorhandler(500)
     def internal_error(error):
         logger.error(f"Internal server error: {error}")
-        return jsonify({"success": False, "error": "Internal server error. Please try again later."}), 500
+        resp = jsonify({"success": False, "error": "Internal server error. Please try again later."})
+        resp.status_code = 500
+        for k, v in _cors_headers().items(): resp.headers[k] = v
+        return resp
 
     # Ensure tables are created when running in development
     with app.app_context():
