@@ -18,13 +18,14 @@ def create_app(config_class=Config):
 
     # Database connection test & graceful fallback
     db_uri = app.config.get("SQLALCHEMY_DATABASE_URI", "")
-    if db_uri.startswith("mysql"):
+    if db_uri.startswith("mysql") or db_uri.startswith("postgresql"):
         try:
-            # Test MySQL connection with 10s timeout for cloud databases
-            test_engine = create_engine(db_uri, connect_args={"connect_timeout": 10})
+            # Test database connection with 10s timeout
+            connect_args = {"connect_timeout": 10} if db_uri.startswith("mysql") else {}
+            test_engine = create_engine(db_uri, connect_args=connect_args)
             with test_engine.connect() as conn:
                 conn.execute(text("SELECT 1;"))
-            logger.info("Successfully connected to MySQL database.")
+            logger.info("Successfully connected to database.")
         except Exception as e:
             if os.getenv("FLASK_ENV") == "production":
                 logger.error(f"Critical: Failed to connect to production database: {e}")
